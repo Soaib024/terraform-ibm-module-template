@@ -80,7 +80,7 @@ variable "vpc_tags" {
 # #####################################################
 
 variable "locations" {
-  description = "locations"
+  description = "A list of location configurations, each defining details for a specific zone. Each location may include address prefixes, public gateway settings, and subnet configurations."
   type = list(object({
     zone = string
     address_prefix = optional(object({
@@ -105,79 +105,3 @@ variable "locations" {
   }))
   default = []
 }
-
-
-variable "subnets" {
-  description = "Subnets to create"
-  type = list(object({
-    name            = string
-    zone            = string
-    access_tags     = optional(list(string), [])
-    ipv4_cidr_block = string
-    network_acl     = optional(string, null)
-    public_gateway  = optional(string, null)
-    tags            = optional(list(string), [])
-  }))
-  default = []
-}
-
-
-variable "address_prefixes" {
-  description = "List of Prefixes for the vpc"
-  type = list(object({
-    name     = string
-    location = string
-    ip_range = string
-  }))
-  default = []
-}
-
-variable "public_gateways" {
-  description = "public gateways"
-  type = list(object({
-    zone        = string
-    name        = optional(string, null)
-    floating_ip = optional(map(string))
-    tags        = optional(list(string), [])
-  }))
-  default = []
-}
-
-
-# variable "subnet_name_prefix" {
-#   description = "Prefix to the names of subnets"
-#   type        = string
-#   default     = null
-# }
-
-# variable "number_of_addresses" {
-#   description = "Number of IPV4 Addresses"
-#   type        = number
-#   default     = null
-# }
-
-
-
-# variable "create_gateway" {
-#   description = "True to create new Gateway"
-#   type        = bool
-#   default     = false
-# }
-
-# variable "public_gateway_name_prefix" {
-#   description = "Prefix to the names of the Public Gateways"
-#   type        = string
-#   default     = null
-# }
-
-# variable "floating_ip" {
-#   description = "Floating IP `id`'s or `address`'es that you want to assign to the public gateway"
-#   type        = map
-#   default     = {}
-# }
-
-# variable "gateway_tags" {
-#   description = "List of Tags for the gateway"
-#   type        = list(string)
-#   default     = []
-# }

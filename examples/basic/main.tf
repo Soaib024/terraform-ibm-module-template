@@ -18,6 +18,5 @@ module "vpc" {
   source            = "../.."
   resource_group_id = module.resource_group.resource_group_id
   vpc_name          = "soaib-vpc0"
-  subnets           = var.subnets
   locations         = var.locations
 }

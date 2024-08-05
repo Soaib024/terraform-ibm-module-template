@@ -98,6 +98,7 @@ locals {
 
 
 resource "ibm_is_subnet" "subnet" {
+  depends_on      = [ibm_is_vpc_address_prefix.vpc_address_prefixes]
   count           = length(local.subnet)
   vpc             = local.vpc_id
   name            = local.subnet[count.index].name
