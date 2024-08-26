@@ -105,3 +105,86 @@ variable "locations" {
   }))
   default = []
 }
+
+
+##############################################################################
+# Network ACLs
+##############################################################################
+
+variable "network_acls" {
+  description = "The list of ACLs to create. Provide at least one rule for each ACL."
+  type = list(
+    object({
+      name                         = string
+      rules = list(
+        object({
+          name        = string
+          action      = string
+          destination = string
+          direction   = string
+          source      = string
+          tcp = optional(
+            object({
+              port_max        = optional(number)
+              port_min        = optional(number)
+              source_port_max = optional(number)
+              source_port_min = optional(number)
+            })
+          )
+          udp = optional(
+            object({
+              port_max        = optional(number)
+              port_min        = optional(number)
+              source_port_max = optional(number)
+              source_port_min = optional(number)
+            })
+          )
+          icmp = optional(
+            object({
+              type = optional(number)
+              code = optional(number)
+            })
+          )
+        })
+      )
+    })
+  )
+
+  default = []
+
+  validation {
+    error_message = "ACL rule actions can only be `allow` or `deny`."
+    condition = length(distinct(
+      flatten([
+        # Check through rules
+        for rule in flatten([var.network_acls[*].rules]) :
+        # Return false action is not valid
+        false if !contains(["allow", "deny"], rule.action)
+      ])
+    )) == 0
+  }
+
+  validation {
+    error_message = "ACL rule direction can only be `inbound` or `outbound`."
+    condition = length(distinct(
+      flatten([
+        # Check through rules
+        for rule in flatten([var.network_acls[*].rules]) :
+        # Return false if direction is not valid
+        false if !contains(["inbound", "outbound"], rule.direction)
+      ])
+    )) == 0
+  }
+
+  validation {
+    error_message = "ACL rule names must match the regex pattern ^([a-z]|[a-z][-a-z0-9]*[a-z0-9])$."
+    condition = length(distinct(
+      flatten([
+        # Check through rules
+        for rule in flatten([var.network_acls[*].rules]) :
+        # Return false if direction is not valid
+        false if !can(regex("^([a-z]|[a-z][-a-z0-9]*[a-z0-9])$", rule.name))
+      ])
+    )) == 0
+  }
+}
